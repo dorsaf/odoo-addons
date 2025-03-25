@@ -8,14 +8,14 @@ pipeline {
     }
     
     stages {
-        stage('Checkout') {
+ /*       stage('Checkout') {
             steps {
                 script {
                     checkout scm
                 }
             }
         }
-        
+ */       
         stage('Check for Changes') {
             steps {
                 script {
@@ -31,7 +31,7 @@ pipeline {
                 }
             }
         }
-        
+ /*      
         stage('Pull Latest Changes') {
             steps {
                 script {
@@ -39,12 +39,13 @@ pipeline {
                 }
             }
         }
-        
+      
         stage('Build & Deploy') {
             steps {
                 echo 'Building and deploying the project...'
                 // Add build/deploy steps here
             }
         }
+*/
     }
 }
