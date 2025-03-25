@@ -7,32 +7,43 @@ pipeline {
         TARGET_FOLDER = 'module_2/' // Specify the folder to monitor
     }
     
-    stages {     
+    stages {
+        
         stage('Check for Changes') {
             steps {
                 script {
-                    def changes = sh(script: "git diff --name-only HEAD~1 HEAD | grep ^${TARGET_FOLDER}", returnStdout: true).trim()
-                    echo "Changes detected in ${TARGET_FOLDER}"
+                    def changes = sh(script: "git diff --name-only HEAD~1 HEAD | grep ^${TARGET_FOLDER} || true", returnStdout: true).trim()
                     
                     if (changes) {
                         echo "Changes detected in ${TARGET_FOLDER}"
+                        env.CHANGES_DETECTED = 'true'
                     } else {
-                        echo "No changes detected in ${TARGET_FOLDER}. Stopping pipeline."
-                        currentBuild.result = 'SUCCESS'
-                        error('No changes detected. Skipping further steps.')
+                        echo "No changes detected in ${TARGET_FOLDER}. Skipping further stages."
+                        env.CHANGES_DETECTED = 'false'
                     }
-                    
                 }
             }
         }
-       
+        
         stage('Pull Latest Changes') {
+            when {
+                expression { env.CHANGES_DETECTED == 'true' }
+            }
             steps {
                 script {
                     sh 'git pull origin ${BRANCH}'
                 }
             }
         }
-
+        
+        stage('Build & Deploy') {
+            when {
+                expression { env.CHANGES_DETECTED == 'true' }
+            }
+            steps {
+                echo 'Building and deploying the project...'
+                // Add build/deploy steps here
+            }
+        }
     }
 }
