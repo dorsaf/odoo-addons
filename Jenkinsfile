@@ -20,14 +20,16 @@ pipeline {
             steps {
                 script {
                     def changes = sh(script: "git diff --name-only HEAD~1 HEAD | grep ^${TARGET_FOLDER}", returnStdout: true).trim()
+                    echo "Changes detected in ${TARGET_FOLDER}"
                     
-                    if (changes) {
+                   /* if (changes) {
                         echo "Changes detected in ${TARGET_FOLDER}"
                     } else {
                         echo "No changes detected in ${TARGET_FOLDER}. Stopping pipeline."
                         currentBuild.result = 'SUCCESS'
                         error('No changes detected. Skipping further steps.')
                     }
+                    */
                 }
             }
         }
