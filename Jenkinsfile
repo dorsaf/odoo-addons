@@ -7,15 +7,7 @@ pipeline {
         TARGET_FOLDER = 'module_2/' // Specify the folder to monitor
     }
     
-    stages {
- /*       stage('Checkout') {
-            steps {
-                script {
-                    checkout scm
-                }
-            }
-        }
- */       
+    stages {     
         stage('Check for Changes') {
             steps {
                 script {
@@ -33,7 +25,7 @@ pipeline {
                 }
             }
         }
- /*      
+       
         stage('Pull Latest Changes') {
             steps {
                 script {
@@ -41,13 +33,6 @@ pipeline {
                 }
             }
         }
-      
-        stage('Build & Deploy') {
-            steps {
-                echo 'Building and deploying the project...'
-                // Add build/deploy steps here
-            }
-        }
-*/
+
     }
 }
