@@ -1,48 +1,66 @@
 pipeline {
     agent any
-    
+
     environment {
         GIT_URL = 'git@github.com:dorsaf/odoo-addons.git'
         BRANCH = 'main'
-        TARGET_FOLDER = 'module_2/' // Specify the folder to monitor
     }
-    
+
     stages {
-        
+
+        stage('Prepare Repo') {
+            steps {
+                script {
+                    // Ensure we're in the correct branch
+                    sh """
+                        git reset --hard
+                        git clean -fd
+                        git checkout ${BRANCH}
+                        git pull origin ${BRANCH}
+                    """
+                }
+            }
+        }
+
         stage('Check for Changes') {
             steps {
                 script {
-                    def changes = sh(script: "git diff --name-only HEAD~1 HEAD | grep ^${TARGET_FOLDER} || true", returnStdout: true).trim()
-                    
-                    if (changes) {
-                        echo "Changes detected in ${TARGET_FOLDER}"
+                    // Get the last two commits
+                    def prevCommit = sh(script: "git rev-parse HEAD~1", returnStdout: true).trim()
+                    def currCommit = sh(script: "git rev-parse HEAD", returnStdout: true).trim()
+
+                    echo "Comparing commits: ${prevCommit} -> ${currCommit}"
+
+                    def changedFiles = sh(
+                        script: "git diff --name-only ${prevCommit} ${currCommit}",
+                        returnStdout: true
+                    ).trim()
+
+                    if (changedFiles) {
+                        echo "Changes detected:"
+                        def folderList = changedFiles
+                            .split("\n")
+                            .collect { it.split("/")[0] } // Top-level folders
+                            .unique()
+                            .join("\n- ")
+
+                        echo "Folders with changes:\n- ${folderList}"
                         env.CHANGES_DETECTED = 'true'
                     } else {
-                        echo "No changes detected in ${TARGET_FOLDER}. Skipping further stages."
+                        echo "No new changes in the branch."
                         env.CHANGES_DETECTED = 'false'
                     }
                 }
             }
         }
-        
-        stage('Pull Latest Changes') {
-            when {
-                expression { env.CHANGES_DETECTED == 'true' }
-            }
-            steps {
-                script {
-                    sh 'git pull origin ${BRANCH}'
-                }
-            }
-        }
-        
+
         stage('Build & Deploy') {
             when {
                 expression { env.CHANGES_DETECTED == 'true' }
             }
             steps {
                 echo 'Building and deploying the project...'
-                // Add build/deploy steps here
+                // Add your build and deployment steps here
             }
         }
     }
