@@ -2,65 +2,41 @@ pipeline {
     agent any
 
     environment {
-        GIT_URL = 'git@github.com:dorsaf/odoo-addons.git'
-        BRANCH = 'main'
+        BRANCH_NAME = 'main'
     }
 
     stages {
-
-        stage('Prepare Repo') {
+        stage('Check for New Commits in Main Branch') {
             steps {
                 script {
-                    // Ensure we're in the correct branch
-                    sh """
-                        git reset --hard
-                        git clean -fd
-                        git checkout ${BRANCH}
-                        git pull origin ${BRANCH}
-                    """
-                }
-            }
-        }
+                    // Fetch the latest changes
+                    sh 'git fetch origin main'
 
-        stage('Check for Changes') {
-            steps {
-                script {
-                    // Get the last two commits
-                    def prevCommit = sh(script: "git rev-parse HEAD~1", returnStdout: true).trim()
-                    def currCommit = sh(script: "git rev-parse HEAD", returnStdout: true).trim()
-
-                    echo "Comparing commits: ${prevCommit} -> ${currCommit}"
-
-                    def changedFiles = sh(
-                        script: "git diff --name-only ${prevCommit} ${currCommit}",
-                        returnStdout: true
-                    ).trim()
-
-                    if (changedFiles) {
-                        echo "Changes detected:"
-                        def folderList = changedFiles
-                            .split("\n")
-                            .collect { it.split("/")[0] } // Top-level folders
-                            .unique()
-                            .join("\n- ")
-
-                        echo "Folders with changes:\n- ${folderList}"
-                        env.CHANGES_DETECTED = 'true'
+                    // Get the last build's commit (if any)
+                    def lastCommit = ''
+                    if (currentBuild.previousBuild) {
+                        lastCommit = currentBuild.previousBuild.rawBuild.getEnvironment(listener).get("GIT_COMMIT")
+                        echo "Last build commit: ${lastCommit}"
                     } else {
-                        echo "No new changes in the branch."
-                        env.CHANGES_DETECTED = 'false'
+                        echo "No previous build found."
+                    }
+
+                    // Get the latest commit on origin/main
+                    def latestCommit = sh(script: "git rev-parse origin/${BRANCH_NAME}", returnStdout: true).trim()
+                    echo "Latest commit on ${BRANCH_NAME}: ${latestCommit}"
+
+                    if (lastCommit && lastCommit != latestCommit) {
+                        echo "New commits detected in '${BRANCH_NAME}' branch."
+                        def logOutput = sh(script: "git log ${lastCommit}..origin/${BRANCH_NAME} --oneline", returnStdout: true).trim()
+                        echo "New commits since last build:\n${logOutput}"
+                        // You can trigger the next stages here
+                    } else if (!lastCommit) {
+                        echo "Can't determine last commit. Proceeding anyway."
+                    } else {
+                        echo "No new commits in '${BRANCH_NAME}' since last build."
+                        // You can skip further stages if needed
                     }
                 }
-            }
-        }
-
-        stage('Build & Deploy') {
-            when {
-                expression { env.CHANGES_DETECTED == 'true' }
-            }
-            steps {
-                echo 'Building and deploying the project...'
-                // Add your build and deployment steps here
             }
         }
     }
