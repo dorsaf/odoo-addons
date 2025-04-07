@@ -17,7 +17,7 @@ pipeline {
                     echo "Latest commit on ${BRANCH_NAME}: ${latestCommit}"
 
                     // Get the commit from the previous build
-                    def lastCommit = currentBuild.previousBuild?.getEnvironment(listener).get("GIT_COMMIT")
+                    def lastCommit = currentBuild.previousBuild?.getEnvironment()?.get("GIT_COMMIT")
 
                     if (lastCommit) {
                         echo "Last build commit: ${lastCommit}"
