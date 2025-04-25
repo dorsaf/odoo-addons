@@ -33,8 +33,20 @@ pipeline {
 
                     if (remoteDiff || localDiff) {
                         echo "\n🔁 [RESULT] Local 'dev' and remote 'origin/dev' branches are DIFFERENT."
-                        // You can choose to fail the build if desired:
-                        // error("Branches are out of sync!")
+                        // Get changed files and extract folder paths
+                        def changedFiles = sh(script: "git diff --name-only origin/dev..dev", returnStdout: true).trim()
+                        if (changedFiles) {
+                            def folders = changedFiles
+                                .split('\n')
+                                .collect { it.contains('/') ? it.tokenize('/')[0] : '.' } // get top-level folder or '.'
+                                .unique()
+                            echo "[INFO] Folders with changes:"
+                            folders.each { echo "- ${it}" }
+                        } else {
+                            echo "[INFO] No file-level changes detected."
+                        }
+                        
+                        
                     } else {
                         echo "\n✅ [RESULT] Local 'dev' and remote 'origin/dev' branches are IDENTICAL."
                     }
