@@ -42,10 +42,11 @@ pipeline {
                                 .unique()
                             echo "[INFO] Folders with changes:"
                             folders.each { echo "- ${it}" }
+                            echo "\n[INFO] list of folders:${folders} "
                         } else {
                             echo "[INFO] No file-level changes detected."
                         }
-                        
+
                         
                     } else {
                         echo "\n✅ [RESULT] Local 'dev' and remote 'origin/dev' branches are IDENTICAL."
