@@ -17,8 +17,8 @@ pipeline {
 
                     def remoteDiff = sh("git log dev..origin/dev --oneline")
                     def localDiff = sh("git log origin/dev..dev --oneline")
-                    echo remoteDiff
-                    echo localDiff
+                    echo "remoteDiff: ${remoteDiff}"
+                    echo "localDiff: ${localDiff}"
 
                     echo "\n[INFO] Commits in remote 'origin/dev' but not in local 'dev':"
                     echo remoteDiff ? remoteDiff : "✅ No new commits in remote."
