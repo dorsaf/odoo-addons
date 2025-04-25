@@ -44,9 +44,9 @@ pipeline {
 
                             if (folders) {
                                 echo "[INFO] Subfolders with changes:"
-                                // folders.each { echo "- ${it}" }
+                                sh("git pull")
                                 for (int i = 0; i < folders.size(); i++) {
-                                    echo "- ${folders[i]}"
+                                    echo "${folders[i]}"
                                 }
    
         
