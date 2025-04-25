@@ -24,7 +24,7 @@ pipeline {
                     echo localDiff ? localDiff : "✅ No new commits in local."
 
                     if (remoteDiff || localDiff) {
-                        echo "\n✅ [RESULT] New commits have been detected."
+     
                         // Get changed files and extract folder paths
                         def changedFiles = sh(script: "git diff --name-only origin/dev..dev", returnStdout: true).trim()
                         if (changedFiles) {
@@ -35,13 +35,16 @@ pipeline {
                                 .unique()
 
                             if (folders) {
-                                echo "[INFO] Subfolders with changes:"
+                                echo "\n✅ [RESULT] New commits have been detected."
                                 sh("git pull")
                                 for (int i = 0; i < folders.size(); i++) {
                                     echo "${folders[i]}"
                                 }
-   
         
+
+                            }else {
+                                 echo "\n✅ [RESULT] New commits have been detected but no need for modules update"
+
                             }
                         }
                         
