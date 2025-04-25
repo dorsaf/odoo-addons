@@ -15,8 +15,13 @@ pipeline {
                     echo "[INFO] Fetching latest changes from remote..."
                     echo sh("git fetch origin")
 
-                    def remoteDiff = sh("git log dev..origin/dev --oneline")
-                    def localDiff = sh("git log origin/dev..dev --oneline")
+                    // def remoteDiff = sh("git log dev..origin/dev --oneline")
+                    // def localDiff = sh("git log origin/dev..dev --oneline")
+
+
+                    def remoteDiff = sh(script: "git log dev..origin/dev --oneline", returnStdout: true).trim()
+                    def localDiff = sh(script: "git log origin/dev..dev --oneline", returnStdout: true).trim()
+
                     echo "remoteDiff: ${remoteDiff}"
                     echo "localDiff: ${localDiff}"
 
