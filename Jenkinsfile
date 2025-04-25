@@ -44,7 +44,12 @@ pipeline {
 
                             if (folders) {
                                 echo "[INFO] Subfolders with changes:"
-                                folders.each { echo "- ${it}" }
+                                // folders.each { echo "- ${it}" }
+                                for (int i = 0; i < folders.size(); i++) {
+                                    echo "- ${folders[i]}"
+                                }
+   
+        
                             } else {
                                 echo "[INFO] No subfolder changes detected."
                             }
