@@ -42,7 +42,7 @@ pipeline {
                                 }
         
                             }else {
-                                 echo "\n❌ [RESULT] New commits have been detected but no need for modules update"
+                                 echo "\n ✅ [RESULT] New commits have been detected ❌ but no need for modules update"
                                  sh("git pull")
                             }
                         }
