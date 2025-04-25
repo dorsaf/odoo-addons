@@ -10,6 +10,7 @@ pipeline {
                     //     proc.waitFor()
                     //     return proc.in.text.trim()
                     // }
+                    sh("git checkout dev")
 
                     echo "[INFO] Fetching latest changes from remote..."
                     echo sh("git fetch origin")
