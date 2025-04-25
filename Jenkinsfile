@@ -5,19 +5,11 @@ pipeline {
         stage('Check Branch Differences') {
             steps {
                 script {
-                    // def runCommand = { String command ->
-                    //     def proc = command.execute()
-                    //     proc.waitFor()
-                    //     return proc.in.text.trim()
-                    // }
+                   
                     sh("git checkout dev")
 
                     echo "[INFO] Fetching latest changes from remote..."
                     echo sh("git fetch origin")
-
-                    // def remoteDiff = sh("git log dev..origin/dev --oneline")
-                    // def localDiff = sh("git log origin/dev..dev --oneline")
-
 
                     def remoteDiff = sh(script: "git log dev..origin/dev --oneline", returnStdout: true).trim()
                     def localDiff = sh(script: "git log origin/dev..dev --oneline", returnStdout: true).trim()
@@ -32,7 +24,7 @@ pipeline {
                     echo localDiff ? localDiff : "✅ No new commits in local."
 
                     if (remoteDiff || localDiff) {
-                        echo "\n🔁 [RESULT] Local 'dev' and remote 'origin/dev' branches are DIFFERENT."
+                        echo "\n✅ [RESULT] New commits have been detected."
                         // Get changed files and extract folder paths
                         def changedFiles = sh(script: "git diff --name-only origin/dev..dev", returnStdout: true).trim()
                         if (changedFiles) {
@@ -50,17 +42,11 @@ pipeline {
                                 }
    
         
-                            } else {
-                                echo "[INFO] No subfolder changes detected."
                             }
-                        } else {
-                            echo "[INFO] No file-level changes detected."
                         }
-
-
                         
                     } else {
-                        echo "\n✅ [RESULT] Local 'dev' and remote 'origin/dev' branches are IDENTICAL."
+                        echo "\n❌ [RESULT] No new commits detected."
                     }
                 }
             }
