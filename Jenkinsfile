@@ -16,20 +16,22 @@ pipeline {
 
                     def remoteDiff = sh("git log dev..origin/dev --oneline")
                     def localDiff = sh("git log origin/dev..dev --oneline")
+                    echo remoteDiff
+                    echo localDiff
 
                     echo "\n[INFO] Commits in remote 'origin/dev' but not in local 'dev':"
-                    echo remoteDiff ? remoteDiff : "✅ No new commits in remote."
+                    // echo remoteDiff ? remoteDiff : "✅ No new commits in remote."
 
-                    echo "\n[INFO] Commits in local 'dev' but not in remote 'origin/dev':"
-                    echo localDiff ? localDiff : "✅ No new commits in local."
+                    // echo "\n[INFO] Commits in local 'dev' but not in remote 'origin/dev':"
+                    // echo localDiff ? localDiff : "✅ No new commits in local."
 
-                    if (remoteDiff || localDiff) {
-                        echo "\n🔁 [RESULT] Local 'dev' and remote 'origin/dev' branches are DIFFERENT."
-                        // You can choose to fail the build if desired:
-                        // error("Branches are out of sync!")
-                    } else {
-                        echo "\n✅ [RESULT] Local 'dev' and remote 'origin/dev' branches are IDENTICAL."
-                    }
+                    // if (remoteDiff || localDiff) {
+                    //     echo "\n🔁 [RESULT] Local 'dev' and remote 'origin/dev' branches are DIFFERENT."
+                    //     // You can choose to fail the build if desired:
+                    //     // error("Branches are out of sync!")
+                    // } else {
+                    //     echo "\n✅ [RESULT] Local 'dev' and remote 'origin/dev' branches are IDENTICAL."
+                    // }
                 }
             }
         }
