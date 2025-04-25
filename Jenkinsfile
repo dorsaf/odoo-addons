@@ -5,17 +5,17 @@ pipeline {
         stage('Check Branch Differences') {
             steps {
                 script {
-                    def runCommand = { String command ->
-                        def proc = command.execute()
-                        proc.waitFor()
-                        return proc.in.text.trim()
-                    }
+                    // def runCommand = { String command ->
+                    //     def proc = command.execute()
+                    //     proc.waitFor()
+                    //     return proc.in.text.trim()
+                    // }
 
                     echo "[INFO] Fetching latest changes from remote..."
-                    echo runCommand("git fetch origin")
+                    echo sh("git fetch origin")
 
-                    def remoteDiff = runCommand("git log dev..origin/dev --oneline")
-                    def localDiff = runCommand("git log origin/dev..dev --oneline")
+                    def remoteDiff = sh("git log dev..origin/dev --oneline")
+                    def localDiff = sh("git log origin/dev..dev --oneline")
 
                     echo "\n[INFO] Commits in remote 'origin/dev' but not in local 'dev':"
                     echo remoteDiff ? remoteDiff : "✅ No new commits in remote."
