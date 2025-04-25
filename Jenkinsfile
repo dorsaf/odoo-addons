@@ -38,14 +38,20 @@ pipeline {
                         if (changedFiles) {
                             def folders = changedFiles
                                 .split('\n')
-                                .collect { it.contains('/') ? it.tokenize('/')[0] : '.' } // get top-level folder or '.'
+                                .findAll { it.contains('/') } // Exclude root-level files
+                                .collect { it.tokenize('/')[0] }
                                 .unique()
-                            echo "[INFO] Folders with changes:"
-                            folders.each { echo "- ${it}" }
-                            echo "\n[INFO] list of folders:${folders} "
+
+                            if (folders) {
+                                echo "[INFO] Subfolders with changes:"
+                                folders.each { echo "- ${it}" }
+                            } else {
+                                echo "[INFO] No subfolder changes detected."
+                            }
                         } else {
                             echo "[INFO] No file-level changes detected."
                         }
+
 
                         
                     } else {
